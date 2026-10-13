@@ -181,6 +181,15 @@ def main():
     checar(s["additionalProperties"] is False and set(s["required"]) == set(s["properties"]),
            "schema no formato exigido pela Manus")
 
+    local = tmp / "marca.local.yaml"
+    local.write_text("tom: meu tom\nmax_caracteres: 9999\nn_hashtags: 5\n"
+                     "descricao_template: x\nposts_por_dia: 1\n", encoding="utf-8")
+    padrao_local, prompt.CAMINHO_MARCA_LOCAL = prompt.CAMINHO_MARCA_LOCAL, local
+    m = prompt.carregar_marca()
+    checar(m["tom"] == "meu tom" and m["max_caracteres"] == 2200,
+           "marca.local.yaml vale no lugar do padrão (e respeita o teto de 2200)")
+    prompt.CAMINHO_MARCA_LOCAL = padrao_local
+
     print("\n[4] orquestrador: disparo com teto diário")
     criadas = []
 

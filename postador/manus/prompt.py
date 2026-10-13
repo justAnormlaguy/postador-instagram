@@ -8,6 +8,9 @@ import yaml
 
 RAIZ = Path(__file__).resolve().parent.parent.parent
 CAMINHO_MARCA = RAIZ / "config" / "marca.yaml"
+# Cópia sua, fora do git: se existir, vale no lugar do padrão. Assim o
+# `git pull` nunca conflita com a voz da sua página.
+CAMINHO_MARCA_LOCAL = RAIZ / "config" / "marca.local.yaml"
 
 # Limites do Instagram. Também são os da Graph API — gerar dentro deles
 # desde a Fase 1 é o que deixa a migração sem retrabalho.
@@ -67,7 +70,9 @@ SCHEMA_SAIDA = {
 
 
 def carregar_marca(caminho: Path | None = None) -> dict:
-    marca = yaml.safe_load(Path(caminho or CAMINHO_MARCA).read_text(encoding="utf-8"))
+    if caminho is None:
+        caminho = CAMINHO_MARCA_LOCAL if CAMINHO_MARCA_LOCAL.is_file() else CAMINHO_MARCA
+    marca = yaml.safe_load(Path(caminho).read_text(encoding="utf-8"))
     marca["max_caracteres"] = min(int(marca["max_caracteres"]), LIMITE_LEGENDA_IG)
     marca["n_hashtags"] = min(int(marca["n_hashtags"]), LIMITE_HASHTAGS_IG)
     return marca

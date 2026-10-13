@@ -1,6 +1,8 @@
 # ============================================================
 # Parâmetros do prompt de geração (Anexo A do plano).
-# VOCÊ EDITA este arquivo: é aqui que mora a voz da página.
+# Este é o PADRÃO versionado. Para personalizar sem conflitar no git pull:
+#   cp config/marca.yaml config/marca.local.yaml   e edite a cópia.
+# Se marca.local.yaml existir, ele vale no lugar deste.
 # ============================================================
 
 # Tom da legenda.

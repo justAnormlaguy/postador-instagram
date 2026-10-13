@@ -41,6 +41,8 @@ que produza **link + resumo** serve (arquivo JSONL ou um comando na mão).
 - [Estrutura do projeto](#estrutura-do-projeto)
 - [Decisões de design](#decisões-de-design)
 - [Problemas comuns](#problemas-comuns)
+- [Atualizando](#atualizando)
+- [Licença](#licença)
 - [Fase 2 — Graph API](#fase-2--graph-api)
 
 ---
@@ -113,7 +115,8 @@ convertida para JPEG 1080×1080.
 ```bash
 cp .env.example .env && chmod 600 .env
 nano .env                  # MANUS_API_KEY, TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, CURADOR_DB
-nano config/marca.yaml     # tom, limite da legenda, hashtags, template visual, posts por dia
+cp config/marca.yaml config/marca.local.yaml
+nano config/marca.local.yaml   # tom, limite, hashtags, template visual, posts por dia
 python3 -m postador.cli init
 ```
 
@@ -168,7 +171,7 @@ Sem rodar nada, o `servir` faz o mesmo sozinho a cada 15 minutos (e logo que
 sobe). Os ids aceitam só os 8 primeiros caracteres, como o bot mostra.
 
 Se a arte não ficar boa, o ajuste é no `descricao_template` de
-`config/marca.yaml` — não no código.
+`config/marca.local.yaml` — não no código.
 
 ---
 
@@ -464,10 +467,12 @@ Todos como `python3 -m postador.cli <comando>`, dentro da pasta do projeto.
 As variáveis de bucket e da Meta já estão no `.env.example` para a Fase 2 e
 ficam vazias por enquanto.
 
-### `config/marca.yaml`
+### `config/marca.yaml` / `config/marca.local.yaml`
 
 A voz da página. É daqui que sai o prompt enviado à Manus
-(`ver-prompt <id>` mostra o resultado).
+(`ver-prompt <id>` mostra o resultado). O `marca.yaml` é o padrão versionado;
+a sua versão vai no `marca.local.yaml`, que fica fora do git e, se existir,
+vale no lugar do padrão — `git pull` nunca conflita com ela.
 
 | Campo | Para quê |
 |---|---|
@@ -502,7 +507,7 @@ A voz da página. É daqui que sai o prompt enviado à Manus
 │       ├── base.py         # contrato do publicador
 │       ├── humano.py       # Fase 1: entrega para revisão
 │       └── graph_api.py    # Fase 2: stub com checklist
-├── config/marca.yaml       # parâmetros do prompt
+├── config/marca.yaml       # parâmetros do prompt (padrão; o seu vai em marca.local.yaml)
 ├── eval/teste_fumaca.py    # teste do fluxo inteiro, offline
 ├── systemd/                # timer diário + serviço contínuo
 ├── schema.sql              # tabelas da fila
@@ -564,6 +569,29 @@ reprocessar.
 | ingestão `unable to open database` | `CURADOR_DB` errado, ou o usuário do serviço não lê a pasta do curador |
 | botões não respondem | outro processo lendo `getUpdates` do mesmo bot, ou `TELEGRAM_CHAT_ID` diferente |
 | aviso "recortada no centro" | a Manus gerou fora de 1:1 — confira se o título não foi cortado |
+
+---
+
+## Atualizando
+
+Tudo que é seu fica fora do git (`.env`, `config/marca.local.yaml`, `dados/`),
+então atualizar é:
+
+```bash
+cd ~/postador
+git pull
+python3 eval/teste_fumaca.py                    # TUDO OK ✓
+sudo systemctl restart postador-servico
+```
+
+Se o pull trouxe mudança em `systemd/`, copie de novo para
+`/etc/systemd/system/` e rode `sudo systemctl daemon-reload`.
+
+---
+
+## Licença
+
+[MIT](LICENSE).
 
 ---
 
