@@ -1,4 +1,4 @@
-"""Módulo 4 — revisão humana no Telegram (Opção A do plano).
+"""Módulo 4 — revisão humana no Telegram.
 
 Cada post chega em duas mensagens:
 

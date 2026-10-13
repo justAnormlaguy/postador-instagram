@@ -1,6 +1,6 @@
 # Postador
 
-Spec: `plano-automacao-instagram.md`. Como foi implementado e onde diverge: `README.md`.
+Como funciona, decisões de design e onde diverge do plano original: `README.md`.
 
 - Python 3.10+, roda no i3 do homelab ao lado do curador-noturno (mesmo usuário, systemd).
 - Toda troca de status passa por `postador/fila/cliente.py::mudar_status` (compare-and-swap);

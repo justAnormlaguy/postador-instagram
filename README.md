@@ -21,8 +21,7 @@ que produza **link + resumo** serve (arquivo JSONL ou um comando na mão).
 
 > **Fase atual:** revisão humana — nenhum post vai para o Instagram sem você.
 > **Fase futura:** publicação automática pela Graph API da Meta, plugada no
-> mesmo ponto do fluxo sem refazer o resto. A spec completa está em
-> [`plano-automacao-instagram.md`](plano-automacao-instagram.md).
+> mesmo ponto do fluxo sem refazer o resto.
 
 ---
 
@@ -510,8 +509,7 @@ vale no lugar do padrão — `git pull` nunca conflita com ela.
 ├── config/marca.yaml       # parâmetros do prompt (padrão; o seu vai em marca.local.yaml)
 ├── eval/teste_fumaca.py    # teste do fluxo inteiro, offline
 ├── systemd/                # timer diário + serviço contínuo
-├── schema.sql              # tabelas da fila
-└── plano-automacao-instagram.md   # spec original
+└── schema.sql              # tabelas da fila
 ```
 
 ---
@@ -541,16 +539,16 @@ hashtags. Se algo foi ajustado, o revisor recebe um aviso.
 na terceira vez ele vai para `falha` e para de gastar crédito até você mandar
 reprocessar.
 
-### Onde a implementação diverge da spec
+### Onde a implementação diverge do plano original
 
-| A spec sugeria | Implementado | Motivo |
+| O plano sugeria | Implementado | Motivo |
 |---|---|---|
 | TypeScript, n8n | Python, CLI + systemd | roda na mesma máquina e do mesmo jeito que o curador-noturno |
 | Airtable | SQLite local | sem conta nem serviço externo para a fila |
 | webhook serverless | servidor da stdlib + túnel | a Manus aceita qualquer HTTPS público; o túnel não abre porta no roteador |
 | `MANUS_WEBHOOK_SECRET` como segredo HMAC | segredo vira parte do caminho | a Manus assina com **RSA** (chave pública dela), não com segredo compartilhado |
 | `POST /tasks` | `POST /v2/task.create` | nome real do endpoint na API v2 |
-| status da spec | + `falha` | sem ele, um post quebrado gira para sempre gastando crédito |
+| status do plano | + `falha` | sem ele, um post quebrado gira para sempre gastando crédito |
 
 ---
 

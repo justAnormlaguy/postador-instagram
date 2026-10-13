@@ -1,4 +1,4 @@
-"""Anexo A do plano: o prompt de geração, parametrizado por
+"""O prompt de geração, parametrizado por
 config/marca.yaml. A saída sai travada por schema (structured output), então
 a legenda chega como campo de JSON — sem texto em volta para limpar."""
 

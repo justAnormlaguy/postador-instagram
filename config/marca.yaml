@@ -1,5 +1,5 @@
 # ============================================================
-# Parâmetros do prompt de geração (Anexo A do plano).
+# Parâmetros do prompt de geração da Manus.
 # Este é o PADRÃO versionado. Para personalizar sem conflitar no git pull:
 #   cp config/marca.yaml config/marca.local.yaml   e edite a cópia.
 # Se marca.local.yaml existir, ele vale no lugar deste.
