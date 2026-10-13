@@ -1,0 +1,9 @@
+[Unit]
+Description=Postador às 7h15 (depois do digest do curador, às 7h)
+
+[Timer]
+OnCalendar=*-*-* 07:15:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target

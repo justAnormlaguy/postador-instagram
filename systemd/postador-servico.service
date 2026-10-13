@@ -1,0 +1,21 @@
+[Unit]
+Description=Postador - webhook da Manus + bot de revisão + polling de segurança
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=controlador
+WorkingDirectory=/home/controlador/postador
+EnvironmentFile=/home/controlador/postador/.env
+# Rota B (ambiente virtual):
+# ExecStart=/home/controlador/postador/.venv/bin/python -u -m postador.cli servir
+# Rota A (pacotes do sistema):
+ExecStart=/usr/bin/python3 -u -m postador.cli servir
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

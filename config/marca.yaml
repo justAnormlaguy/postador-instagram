@@ -1,0 +1,32 @@
+# ============================================================
+# Parâmetros do prompt de geração (Anexo A do plano).
+# VOCÊ EDITA este arquivo: é aqui que mora a voz da página.
+# ============================================================
+
+# Tom da legenda.
+tom: "informativo e direto, sem sensacionalismo"
+
+# Limite da legenda em caracteres. O Instagram aceita até 2200 (e a Graph
+# API recusa acima disso). Fique abaixo para sobrar espaço para a edição.
+max_caracteres: 1500
+
+# Quantidade de hashtags. O Instagram aceita no máximo 30.
+n_hashtags: 8
+
+# Template visual da marca, descrito em texto para a Manus.
+descricao_template: >-
+  Fundo escuro (#0B0F14) com acento em verde terminal (#00FF88).
+  Tipografia sans-serif bold para o título, fonte mono para detalhes técnicos.
+  Logo/assinatura "@sua_pagina" discreta no canto inferior direito.
+  Composição limpa, sem fotos de banco de imagem de "hacker de capuz".
+
+# Idioma da saída. Vazio = padrão da conta Manus. Ex.: "pt-BR".
+locale: ""
+
+# Quantos posts disparar por dia, no máximo. Cada post = 1 tarefa Manus
+# (texto + imagem) = crédito gasto. Os que sobrarem esperam o dia seguinte.
+posts_por_dia: 3
+
+# Nota mínima do curador para virar post (0-10). O digest já filtra; isto
+# é para o Instagram, que pode ser mais exigente que o seu digest pessoal.
+nota_minima: 8

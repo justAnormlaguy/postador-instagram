@@ -1,0 +1,17 @@
+[Unit]
+Description=Postador - ingere do curador, dispara a Manus e entrega para revisão
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=controlador
+WorkingDirectory=/home/controlador/postador
+EnvironmentFile=/home/controlador/postador/.env
+# Rota B (ambiente virtual):
+# ExecStart=/home/controlador/postador/.venv/bin/python -m postador.cli ciclo
+# Rota A (pacotes do sistema):
+ExecStart=/usr/bin/python3 -m postador.cli ciclo
+TimeoutStartSec=30min
+StandardOutput=journal
+StandardError=journal
