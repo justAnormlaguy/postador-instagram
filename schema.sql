@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS posts (
     titulo_arte      TEXT,                  -- texto que a Manus pôs na imagem
     imagem_path      TEXT,                  -- arquivo local, baixado na hora
     imagem_url       TEXT,                  -- URL pública (Fase 2, bucket)
-    avisos           TEXT,                  -- legenda longa, imagem fora de 1080x1080...
+    avisos           TEXT,                  -- legenda longa, imagem fora de 1080x1350...
 
     manus_task_id    TEXT    UNIQUE,
     manus_task_url   TEXT,

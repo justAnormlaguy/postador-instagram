@@ -1,4 +1,4 @@
 PyYAML>=6.0
 requests>=2.31
 cryptography>=41     # verificação da assinatura RSA do webhook da Manus
-Pillow>=10           # opcional: confere e normaliza a imagem para JPEG 1080x1080
+Pillow>=10           # opcional: confere e normaliza a imagem para JPEG 1080x1350

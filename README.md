@@ -2,7 +2,7 @@
 
 Automação de homelab que transforma o feed diário de notícias de
 cibersegurança em **posts de Instagram prontos para revisar**: a
-[Manus](https://manus.im) escreve a legenda e cria a arte 1080×1080, e o
+[Manus](https://manus.im) escreve a legenda e cria a arte 1080×1350 (retrato 4:5), e o
 pacote chega no seu **Telegram** com botões para aprovar, editar ou descartar.
 Você posta pelo app; a máquina faz o resto.
 
@@ -107,7 +107,7 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 ```
 
 O Pillow (`python3-pil`) é opcional, mas sem ele a imagem não é conferida nem
-convertida para JPEG 1080×1080.
+convertida para JPEG 1080×1350.
 
 **Configuração:**
 
@@ -531,8 +531,8 @@ output da Manus), sem texto em volta para limpar. A Manus também informa o
 nome do arquivo da arte, então um rascunho anexado junto não vira o post por
 engano.
 
-**Formato da Fase 2 desde já.** A imagem é normalizada para JPEG 1080×1080 (o
-que a Graph API aceita), e a legenda é conferida contra 2200 caracteres e 30
+**Formato da Fase 2 desde já.** A imagem é normalizada para JPEG 1080×1350, retrato 4:5
+(o maior formato do feed, aceito pela Graph API), e a legenda é conferida contra 2200 caracteres e 30
 hashtags. Se algo foi ajustado, o revisor recebe um aviso.
 
 **Falhas não giram para sempre.** Erro da Manus devolve o post para `nova`;
@@ -566,7 +566,7 @@ reprocessar.
 | ingestão lê 0 | o digest do curador ainda não rodou, ou `nota_minima` alta |
 | ingestão `unable to open database` | `CURADOR_DB` errado, ou o usuário do serviço não lê a pasta do curador |
 | botões não respondem | outro processo lendo `getUpdates` do mesmo bot, ou `TELEGRAM_CHAT_ID` diferente |
-| aviso "recortada no centro" | a Manus gerou fora de 1:1 — confira se o título não foi cortado |
+| aviso "recortada no centro" | a Manus gerou fora de 4:5 — confira se o título não foi cortado |
 
 ---
 
@@ -597,6 +597,6 @@ Se o pull trouxe mudança em `systemd/`, copie de novo para
 
 Checklist em [`postador/publicador/graph_api.py`](postador/publicador/graph_api.py).
 Já está pronto para ela: o status `postada_via_api`, a imagem em JPEG
-1080×1080, a legenda conferida contra os limites e o campo `imagem_url` na
+1080×1350, a legenda conferida contra os limites e o campo `imagem_url` na
 fila. Falta o bucket com URL pública, o app na Meta (com App Review) e o código
 do publicador — o resto do fluxo não muda.

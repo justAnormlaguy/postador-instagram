@@ -175,7 +175,8 @@ def main():
 
     print("\n[3] prompt")
     texto = prompt.montar(marca, fonte_resumo="RES", fonte_link="https://l")
-    checar("RES" in texto and "https://l" in texto and "1080x1080" in texto, "resumo, link e 1080 no prompt")
+    checar("RES" in texto and "https://l" in texto and "1080x1350" in texto and "4:5" in texto,
+           "resumo, link e formato 4:5 no prompt")
     checar(str(marca["max_caracteres"]) in texto and marca["tom"] in texto, "tom e limite vêm do marca.yaml")
     s = prompt.SCHEMA_SAIDA
     checar(s["additionalProperties"] is False and set(s["required"]) == set(s["properties"]),
@@ -270,8 +271,8 @@ def main():
     checar(p["titulo_arte"] == "nginx: corrija já", "titulo_arte gravado")
     from PIL import Image
     with Image.open(p["imagem_path"]) as img:
-        checar(img.size == (1080, 1080) and img.format == "JPEG",
-               f"imagem certa (arte.png, não o rascunho) normalizada p/ JPEG 1080x1080 ({img.size})")
+        checar(img.size == (1080, 1350) and img.format == "JPEG",
+               f"imagem certa (arte.png, não o rascunho) normalizada p/ JPEG 1080x1350 ({img.size})")
     checar("recortada" in (p["avisos"] or ""), "aviso de recorte para o revisor")
     checar(esperar(lambda: fila.pegar(con, alvo["id"])["enviado_revisao_em"] is not None),
            "pacote entregue no Telegram logo após a captura")
@@ -281,6 +282,17 @@ def main():
     checar(post_http(local, corpo, assinar(chave, url, corpo)) == 200, "evento repetido -> 200")
     time.sleep(0.3)
     checar(len(tg.chamadas) == n_antes, "evento repetido não reenvia nada (idempotente)")
+
+    print("\n[6b] normalização para 4:5")
+    for nome, tamanho, recorta in [("quadrada", (1080, 1080), True),
+                                   ("4:5 grande", (2160, 2700), False),
+                                   ("alta demais", (1080, 1920), True)]:
+        url_img = f"https://cdn.test/{tamanho[0]}x{tamanho[1]}.png"
+        IMAGENS[url_img] = png(*tamanho)
+        final, avisos_img = captura._salvar_imagem(f"teste{tamanho[1]}", manus.Anexo("x.png", url_img))
+        with Image.open(final) as img:
+            checar(img.size == (1080, 1350) and ("recortada" in " ".join(avisos_img)) == recorta,
+                   f"{nome} {tamanho} -> 1080x1350, recorte={recorta} ({avisos_img})")
 
     print("\n[7] polling e falhas")
     outro = fila.pegar_por_task(con, "task2")
@@ -303,7 +315,7 @@ def main():
     # polling capturando de verdade, com o payload de task.listMessages
     orquestrador.disparar(con, marca, limite=99)
     p = fila.pegar(con, outro["id"])
-    IMAGENS["https://cdn.test/b.png"] = png(1080, 1080)
+    IMAGENS["https://cdn.test/b.png"] = png(1080, 1350)
     resultado_real = manus.__dict__["_resultado_original"]
     manus._chamar = _api_manus_falsa(p["manus_task_id"])
     manus.resultado = resultado_real
@@ -312,7 +324,7 @@ def main():
     checar(r["capturados"] == 3 and p["status"] == "aguardando_revisao",
            f"polling captura todos os `gerando` ({r})")
     checar(p["legenda"] == "Hospital atacado. #ransomware" and not p["avisos"],
-           "polling lê structured_output_result e imagem 1080 sem aviso")
+           "polling lê structured_output_result e imagem 1080x1350 sem aviso")
 
     print("\n[8] revisão no Telegram")
     def clique(dados, chat="42"):

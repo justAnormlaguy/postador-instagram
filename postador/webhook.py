@@ -70,14 +70,20 @@ class _Handler(BaseHTTPRequestHandler):
             self._responder(404)
 
     def do_POST(self):
+        try:
+            tamanho = int(self.headers.get("Content-Length") or 0)
+        except ValueError:
+            tamanho = -1
+        if tamanho <= 0 or tamanho > LIMITE_CORPO:
+            self.close_connection = True
+            self._responder(400, "corpo inválido")
+            return
+        # Lê o corpo antes de qualquer resposta: fechar a conexão com dados
+        # não lidos manda RST e o cliente vê "connection reset" em vez do 404.
+        corpo = self.rfile.read(tamanho)
         if urlparse(self.path).path != caminho_esperado():
             self._responder(404)
             return
-        tamanho = int(self.headers.get("Content-Length") or 0)
-        if tamanho <= 0 or tamanho > LIMITE_CORPO:
-            self._responder(400, "corpo inválido")
-            return
-        corpo = self.rfile.read(tamanho)
         assinatura = self.headers.get("X-Webhook-Signature")
         timestamp = self.headers.get("X-Webhook-Timestamp")
 

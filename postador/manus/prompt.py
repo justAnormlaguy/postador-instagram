@@ -16,7 +16,9 @@ CAMINHO_MARCA_LOCAL = RAIZ / "config" / "marca.local.yaml"
 # desde a Fase 1 é o que deixa a migração sem retrabalho.
 LIMITE_LEGENDA_IG = 2200
 LIMITE_HASHTAGS_IG = 30
-LADO_IMAGEM = 1080
+# Retrato 4:5, o maior formato do feed (e aceito pela Graph API).
+LARGURA_IMAGEM = 1080
+ALTURA_IMAGEM = 1350
 
 TEMPLATE = """\
 Você é um social media de uma página de cibersegurança.
@@ -32,11 +34,13 @@ Com base no RESUMO e no LINK abaixo, produza:
      use apenas o que está no resumo
    - Escreva em português do Brasil
 
-2. IMAGEM {lado}x{lado} (quadrada, PNG ou JPG):
+2. IMAGEM {largura}x{altura} px (retrato 4:5, vertical; PNG ou JPG):
    - Template da marca: {descricao_template}
    - Arte própria — NÃO reutilize imagens de portais de notícia nem logos
      de terceiros
    - Texto na imagem: título curto (até 8 palavras) e legível em mobile
+   - Deixe margem de segurança de ~70 px nas laterais: a grade do perfil
+     corta as bordas esquerda e direita
    - Salve a imagem como arquivo e anexe-a na resposta final
 
 RESUMO: {fonte_resumo}
@@ -84,7 +88,8 @@ def montar(marca: dict, *, fonte_resumo: str, fonte_link: str) -> str:
         max_caracteres=marca["max_caracteres"],
         n_hashtags=marca["n_hashtags"],
         descricao_template=" ".join(str(marca["descricao_template"]).split()),
-        lado=LADO_IMAGEM,
+        largura=LARGURA_IMAGEM,
+        altura=ALTURA_IMAGEM,
         fonte_resumo=fonte_resumo.strip(),
         fonte_link=fonte_link.strip(),
     )

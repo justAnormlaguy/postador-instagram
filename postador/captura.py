@@ -16,7 +16,8 @@ from pathlib import Path
 from .fila import Status
 from .fila import cliente as fila
 from .manus import cliente as manus
-from .manus.prompt import LADO_IMAGEM, LIMITE_HASHTAGS_IG, LIMITE_LEGENDA_IG
+from .manus.prompt import (ALTURA_IMAGEM, LARGURA_IMAGEM, LIMITE_HASHTAGS_IG,
+                           LIMITE_LEGENDA_IG)
 
 PASTA_IMAGENS = fila.RAIZ / "dados" / "imagens"
 
@@ -92,8 +93,8 @@ def _parar_silencioso(task_id: str | None) -> None:
 # ------------------------------------------------------------------ imagem
 
 def _salvar_imagem(post_id: str, anexo: manus.Anexo) -> tuple[Path, list[str]]:
-    """Baixa e normaliza para JPEG 1080x1080 — o formato que a Graph API
-    aceita. Feito desde a Fase 1, a migração não precisa reprocessar nada.
+    """Baixa e normaliza para JPEG 1080x1350 (retrato 4:5) — formato que a
+    Graph API aceita. Feito desde a Fase 1, a migração não precisa reprocessar nada.
     Sem Pillow, guarda o arquivo como veio e avisa o revisor."""
     PASTA_IMAGENS.mkdir(parents=True, exist_ok=True)
     ext = Path(anexo.nome).suffix.lower() or ".png"
@@ -113,19 +114,27 @@ def _salvar_imagem(post_id: str, anexo: manus.Anexo) -> tuple[Path, list[str]]:
     with Image.open(original) as img:
         img.load()
         largura, altura = img.size
-        if (largura, altura) != (LADO_IMAGEM, LADO_IMAGEM):
-            if largura != altura:
+        alvo = (LARGURA_IMAGEM, ALTURA_IMAGEM)
+        if (largura, altura) != alvo:
+            proporcao = LARGURA_IMAGEM / ALTURA_IMAGEM
+            # Recorta no centro até 4:5 (sobra largura ou sobra altura) e
+            # depois redimensiona. 1% de folga para arredondamento.
+            if abs(largura / altura - proporcao) > 0.01 * proporcao:
                 avisos.append(
-                    f"imagem veio {largura}x{altura}: recortada no centro — "
-                    "confira se o título não foi cortado"
+                    f"imagem veio {largura}x{altura}, fora de 4:5: recortada no "
+                    "centro — confira se o título não foi cortado"
                 )
+                if largura / altura > proporcao:
+                    nova = round(altura * proporcao)
+                    esq = (largura - nova) // 2
+                    img = img.crop((esq, 0, esq + nova, altura))
+                else:
+                    nova = round(largura / proporcao)
+                    topo = (altura - nova) // 2
+                    img = img.crop((0, topo, largura, topo + nova))
             else:
                 avisos.append(f"imagem veio {largura}x{altura}: redimensionada")
-            lado = min(largura, altura)
-            esq, topo = (largura - lado) // 2, (altura - lado) // 2
-            img = img.crop((esq, topo, esq + lado, topo + lado)).resize(
-                (LADO_IMAGEM, LADO_IMAGEM), Image.LANCZOS
-            )
+            img = img.resize(alvo, Image.LANCZOS)
         final = PASTA_IMAGENS / f"{post_id}.jpg"
         img.convert("RGB").save(final, "JPEG", quality=92)
     return final, avisos

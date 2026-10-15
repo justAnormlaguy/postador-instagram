@@ -9,7 +9,7 @@ a Fase 2 começar, este é o único arquivo que ganha código de verdade
      `instagram_content_publish` (e afins).
   3. Token de longa duração (~60 dias) + rotina de renovação.
   4. Imagem em URL pública: `posts.imagem_url` (bucket R2/S3). A captura
-     já salva JPEG 1080x1080 — o formato que a API aceita.
+     já salva JPEG 1080x1350 (4:5) — o formato que a API aceita.
   5. Publicação em duas chamadas:
        POST /{IG_USER_ID}/media          image_url, caption -> creation_id
        POST /{IG_USER_ID}/media_publish  creation_id        -> media id
