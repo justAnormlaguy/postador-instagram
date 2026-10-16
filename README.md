@@ -480,7 +480,7 @@ vale no lugar do padrão — `git pull` nunca conflita com ela.
 | `n_hashtags` | quantidade de hashtags (teto: 30) |
 | `descricao_template` | identidade visual descrita em texto: cores, fontes, assinatura |
 | `locale` | idioma da saída na Manus; vazio = padrão da conta |
-| `posts_por_dia` | teto de tarefas por 24 h (janela móvel) — controla o gasto de crédito |
+| `posts_por_dia` | teto de tarefas por dia, contado desde a meia-noite (disparos manuais também contam) — controla o gasto de crédito |
 | `nota_minima` | nota mínima do curador para virar post |
 
 ---

@@ -16,10 +16,18 @@ HORAS_TRAVADA = 12
 
 
 def disparar(con, marca: dict, *, limite: int | None = None) -> dict:
-    """Respeita `posts_por_dia` numa janela móvel de 24h: rodar o ciclo duas
-    vezes no mesmo dia não gasta crédito em dobro."""
-    teto = marca.get("posts_por_dia", 3) if limite is None else limite
-    vagas = max(0, teto - fila.disparados_desde(con, fila.ha(24)))
+    """Respeita `posts_por_dia` por dia de calendário (desde a meia-noite):
+    rodar o ciclo duas vezes no mesmo dia não gasta crédito em dobro, e o
+    que foi disparado ontem não come a cota de hoje. Disparos manuais e
+    novas tentativas também contam — todos gastam crédito.
+
+    `limite` é o disparo manual (`disparar --limite N`): dispara até N
+    mesmo com a cota do dia cheia."""
+    if limite is not None:
+        vagas = limite
+    else:
+        teto = marca.get("posts_por_dia", 3)
+        vagas = max(0, teto - fila.disparados_desde(con, fila.inicio_do_dia()))
     if not vagas:
         return {"disparados": 0, "motivo": "teto diário atingido"}
 

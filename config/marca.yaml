@@ -25,7 +25,7 @@ descricao_template: >-
 # Idioma da saída. Vazio = padrão da conta Manus. Ex.: "pt-BR".
 locale: ""
 
-# Quantos posts disparar por dia, no máximo. Cada post = 1 tarefa Manus
+# Quantos posts disparar por dia (desde a meia-noite), no máximo. Cada post = 1 tarefa Manus
 # (texto + imagem) = crédito gasto. Os que sobrarem esperam o dia seguinte.
 posts_por_dia: 3
 

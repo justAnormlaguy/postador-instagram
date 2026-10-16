@@ -38,6 +38,18 @@ def ha(horas: float) -> str:
     )
 
 
+def inicio_do_dia() -> str:
+    """Meia-noite de hoje no fuso da máquina, em UTC (o formato das colunas).
+
+    O teto diário conta a partir daqui, e não em 24h corridas: com o ciclo
+    rodando sempre às 7h15, os disparos de ontem às 07:15:3x ainda caíam
+    dentro da janela de hoje e travavam o dia inteiro."""
+    meia_noite = datetime.now().astimezone().replace(
+        hour=0, minute=0, second=0, microsecond=0
+    )
+    return meia_noite.astimezone(timezone.utc).isoformat(timespec="seconds")
+
+
 def conectar(caminho: Path | str | None = None) -> sqlite3.Connection:
     caminho = Path(caminho or CAMINHO_BANCO)
     caminho.parent.mkdir(parents=True, exist_ok=True)

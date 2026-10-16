@@ -203,7 +203,27 @@ def main():
     checar(r["disparados"] == 2, f"dispara até posts_por_dia ({r})")
     checar(criadas[0]["schema"] is prompt.SCHEMA_SAIDA, "manda o structured output schema")
     r = orquestrador.disparar(con, marca)
-    checar(r["disparados"] == 0, "segundo ciclo no mesmo dia não dispara (janela de 24h)")
+    checar(r["disparados"] == 0, "segundo ciclo no mesmo dia não dispara")
+    # Regressão: o ciclo roda todo dia no mesmo horário. Disparo de ontem
+    # (mesmo um pouco depois deste horário, ou às 23:59) não come a cota de hoje.
+    from datetime import datetime as _dt, timedelta as _td
+    ontem_depois = (_dt.fromisoformat(fila.ha(24)) + _td(seconds=5)).isoformat(timespec="seconds")
+    antes_da_meia_noite = (_dt.fromisoformat(fila.inicio_do_dia()) - _td(seconds=1)).isoformat(timespec="seconds")
+    for quando in (ontem_depois, antes_da_meia_noite):
+        con.execute("INSERT INTO eventos (post_id, de, para, detalhe, criado_em) "
+                    "VALUES ('x', 'nova', 'gerando', 'teste', ?)", (quando,))
+    checar(fila.disparados_desde(con, fila.inicio_do_dia()) == 2,
+           "disparos de ontem não contam no teto de hoje")
+    con.execute("DELETE FROM eventos WHERE post_id='x'")
+    con.commit()
+    r = orquestrador.disparar(con, marca, limite=1)
+    checar(r["disparados"] == 1, f"--limite dispara mesmo com a cota do dia cheia ({r})")
+    extra = fila.listar(con, Status.GERANDO)[-1]
+    fila.registrar_falha(con, extra["id"], "teste")   # devolve para `nova`
+    con.execute("UPDATE posts SET tentativas=0, erro=NULL WHERE id=?", (extra["id"],))
+    con.execute("DELETE FROM eventos WHERE post_id=? AND id > (SELECT MIN(id) FROM eventos WHERE post_id=?)",
+                (extra["id"], extra["id"]))
+    con.commit()
     gerando = fila.listar(con, Status.GERANDO)
     checar(len(gerando) == 2 and all(p["nota"] == 9 for p in gerando), "nota maior vai primeiro")
 
